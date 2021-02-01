@@ -9,7 +9,6 @@ const (
 	cmd        = "fzf"
 	prompt     = "--prompt"
 	autoSelect = "-1"
-	sep        = "-d"
 )
 
 func NewBuilder() menu.Builder {
@@ -42,17 +41,11 @@ func (f *fzfMenuBuilder) AutoSelect(b bool) menu.Builder {
 	return f
 }
 
-func (f *fzfMenuBuilder) Sep(s string) menu.Builder {
-	f.sep = s
-	return f
-}
-
 func (f *fzfMenuBuilder) Build() menu.Menu {
 	argSlice := make([]string, 0)
 
 	argSlice = util.AppendIf(argSlice, prompt, f.prompt)
 	argSlice = util.AppendIf(argSlice, autoSelect, f.autoSelect)
-	argSlice = util.AppendIf(argSlice, sep, f.sep)
 
 	return fzfMenu{
 		cmd:  cmd,
