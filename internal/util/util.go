@@ -3,15 +3,13 @@ package util
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/exec"
+	"reflect"
 )
 
-func RunCmdWithInput(input string, cmd string, args []string) (string, error) {
-	finput := func(in io.WriteCloser) {
-		fmt.Fprintln(in, input)
-	}
-
+func RunCmdWithReader(finput func(closer io.WriteCloser), cmd string, args []string) (string, error) {
 	menu := exec.Command(cmd, args...)
 	menu.Stderr = os.Stderr
 	in, _ := menu.StdinPipe()
@@ -23,25 +21,54 @@ func RunCmdWithInput(input string, cmd string, args []string) (string, error) {
 	return string(result), nil
 }
 
-func AppendIf(slice []string, argName string, argValue interface{}) []string {
+func RunCmdWithInput(input string, cmd string, args []string) (string, error) {
+	finput := func(in io.WriteCloser) {
+		fmt.Fprintln(in, input)
+	}
+	return RunCmdWithReader(finput, cmd, args)
 
-	switch v := argValue.(type) {
-	case bool:
-		if v {
-			slice = append(slice, argName)
+}
+
+func AppendIf(res []string, argName string, pValue interface{}) []string {
+	if pValue == nil {
+		return res
+	}
+	vs := reflect.ValueOf(pValue)
+
+	switch vs.Kind() {
+	case reflect.String:
+		if vs.String() != ""{
+			res = appendArgName(res, argName)
+			res = append(res, fmt.Sprintf("%s", vs.String()))
+			return res
 		}
-	case string:
-		if v != "" {
-			slice = append(slice, argName)
-			slice = append(slice, fmt.Sprintf("%s", v))
+
+	case reflect.Bool:
+		if vs.Bool() {
+			res = appendArgName(res, argName)
+			return res
 		}
-	case int:
-		if v != 0 {
-			slice = append(slice, argName)
-			slice = append(slice, fmt.Sprintf("%d", v))
+	case reflect.Slice:
+		for i := 0; i < vs.Len(); i++ {
+			vIndex := vs.Index(i)
+
+			if i == 0 {
+				res = AppendIf(res, argName, vIndex.Interface())
+			} else {
+				res = AppendIf(res, "", vIndex.Interface())
+			}
 		}
+	case reflect.Int:
+		log.Fatal(fmt.Errorf("cannot be int, use string instead"))
 	}
 
-	return slice
+	return res
+}
 
+func appendArgName(slice []string, argName string) []string {
+	if argName == "" {
+		return slice
+	}
+	slice = append(slice, argName)
+	return slice
 }

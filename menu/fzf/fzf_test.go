@@ -2,6 +2,7 @@ package fzf
 
 import (
 	"fmt"
+	menu2 "github.com/alexpfx/go_menus/menu"
 	"testing"
 )
 
@@ -13,20 +14,35 @@ func TestNewBuilder(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("teste ok")
-	fmt.Println(out)
+	t.Log(out)
 
 }
 
 func TestNewBuilderWithArgs(t *testing.T) {
+	mmenu := NewBuilder().Prompt("Mes:\n").(menu2.Builder).AutoSelect(true).Build()
 
-	menu := NewBuilder().Prompt("select:\n").AutoSelect(true).Build()
-
-	out, err := menu.Run("abcde\nabcde1\nxpto")
+	out, err := mmenu.Run("janeiro\nfevereiro\nmarço")
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("teste ok")
-	fmt.Println(out)
+	fmt.Println("mes: ", out)
+
+}
+
+func TestNewBuilderWithIndex(t *testing.T) {
+
+	mmenu := NewBuilder().Prompt("selecione").
+		AutoSelect(true).
+		Prompt("selecione o time").(Builder).
+		Prefix(2, "\n", func(input string, index int) string {
+			return fmt.Sprintf("%d %s", index, input)
+		}).Build()
+
+	out, err := mmenu.Run("gremio\npalmeiras\nfigueira")
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("time: ", out)
 
 }

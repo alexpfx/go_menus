@@ -7,6 +7,5 @@ type Menu interface {
 type Builder interface {
 	Prompt(string) Builder
 	AutoSelect(bool) Builder
-
 	Build() Menu
 }
