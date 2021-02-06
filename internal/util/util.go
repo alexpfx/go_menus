@@ -9,13 +9,14 @@ import (
 	"reflect"
 )
 
-func RunCmdWithReader(finput func(closer io.WriteCloser), cmd string, args []string) (string, error) {
+func runCmdWithReader(finput func(closer io.WriteCloser), cmd string, args []string) (string, error) {
 	menu := exec.Command(cmd, args...)
+	fmt.Println("comando: ", menu.String())
 	menu.Stderr = os.Stderr
 	in, _ := menu.StdinPipe()
 	go func() {
 		finput(in)
-		in.Close()
+		defer in.Close()
 	}()
 	result, _ := menu.Output()
 	return string(result), nil
@@ -25,7 +26,7 @@ func RunCmdWithInput(input string, cmd string, args []string) (string, error) {
 	finput := func(in io.WriteCloser) {
 		fmt.Fprintln(in, input)
 	}
-	return RunCmdWithReader(finput, cmd, args)
+	return runCmdWithReader(finput, cmd, args)
 
 }
 
@@ -37,7 +38,7 @@ func AppendIf(res []string, argName string, pValue interface{}) []string {
 
 	switch vs.Kind() {
 	case reflect.String:
-		if vs.String() != ""{
+		if vs.String() != "" {
 			res = appendArgName(res, argName)
 			res = append(res, fmt.Sprintf("%s", vs.String()))
 			return res
