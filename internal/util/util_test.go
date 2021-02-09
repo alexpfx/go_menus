@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -41,7 +42,7 @@ func TestAppendIf(t *testing.T) {
 			args: args{
 				slice:    original,
 				argName:  "-d",
-				argValue: 1,
+				argValue: "1",
 			},
 			want: []string{"a", "-d", "1"},
 		},
@@ -50,7 +51,7 @@ func TestAppendIf(t *testing.T) {
 			args: args{
 				slice:    original,
 				argName:  "-e",
-				argValue: 1,
+				argValue: "1",
 			},
 			want: []string{"a", "-e", "1"},
 		},
@@ -97,7 +98,7 @@ func TestAppendIf(t *testing.T) {
 			args: args{
 				slice:    original,
 				argName:  "-i",
-				argValue: 0,
+				argValue: "0",
 			},
 			want: []string{"a", "-i", "0"},
 		},
@@ -108,7 +109,7 @@ func TestAppendIf(t *testing.T) {
 				argName:  "-j",
 				argValue: "",
 			},
-			want: []string{"a", "-j", ""},
+			want: []string{"a"},
 		},
 		{
 			name: "t10",
@@ -117,7 +118,7 @@ func TestAppendIf(t *testing.T) {
 				argName:  "",
 				argValue: "",
 			},
-			want: []string{"a", ""},
+			want: []string{"a"},
 		},
 		{
 			name: "t11",
@@ -141,6 +142,7 @@ func TestAppendIf(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := AppendIf(tt.args.slice, tt.args.argName, tt.args.argValue); !reflect.DeepEqual(got, tt.want) {
+				fmt.Println(tt)
 				t.Errorf("AppendIf() = %v, want %v", got, tt.want)
 			}
 		})

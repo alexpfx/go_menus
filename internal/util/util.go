@@ -9,6 +9,8 @@ import (
 	"reflect"
 )
 
+
+
 func runCmdWithReader(finput func(closer io.WriteCloser), cmd string, args []string) (string,
 	error) {
 	menu := exec.Command(cmd, args...)
@@ -21,6 +23,12 @@ func runCmdWithReader(finput func(closer io.WriteCloser), cmd string, args []str
 	}()
 	result, _ := menu.Output()
 	return string(result), nil
+}
+
+func RunCmdWithNoImput(cmd string, args []string) (string, error) {
+	return runCmdWithReader(func(in io.WriteCloser) {
+	}, cmd, args)
+	
 }
 
 func RunCmdWithInput(input string, cmd string, args []string) (string, error) {
