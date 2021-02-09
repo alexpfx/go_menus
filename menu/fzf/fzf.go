@@ -22,13 +22,13 @@ type Builder interface {
 	WithNth(nth, sep string) menu.Builder
 }
 
-func (f Menu) Run(input string) (string, error) {
-	return util.RunCmdWithInput(input, f.cmd, f.args)
-}
-
-type Menu struct {
+type fzfMenu struct {
 	cmd  string
 	args []string
+}
+
+func (f fzfMenu) Run(input string) (string, error) {
+	return util.RunCmdWithInput(input, f.cmd, f.args)
 }
 
 type fzfMenuBuilder struct {
@@ -64,7 +64,7 @@ func (f *fzfMenuBuilder) Build() menu.Menu {
 		argSlice = util.AppendIf(argSlice, delimiter, f.nthDelimiter)
 	}
 	
-	return Menu{
+	return fzfMenu{
 		cmd:  cmd,
 		args: argSlice,
 	}
