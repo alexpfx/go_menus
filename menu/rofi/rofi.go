@@ -28,9 +28,9 @@ func NewUserInputDMenu(prompt string) DMenu {
 		Prompt(prompt).
 		ThemeStr("listview { enabled: false;}").
 		Build()
-
+	
 	return b
-
+	
 }
 
 type MenuBuilder interface {
@@ -50,21 +50,21 @@ type DMenuBuilder interface {
 	//'f' filter string (user action)
 	//'F' quoted filter string (user action)
 	Format(string) DMenuBuilder
-
+	
 	/*
 	 -matching method
-
+	
 	       Specify  the matching algorithm used.  Current the fol‐
 	       lowing methods are supported.
-
+	
 	       • normal: match the int string
-
+	
 	       • regex: match a regex input
-
+	
 	       • glob: match a glob pattern
-
+	
 	       • fuzzy: do a fuzzy match
-
+	
 	       Default: normal
 	*/
 	Matching(string) DMenuBuilder
@@ -89,12 +89,12 @@ func (mb *menuBuilder) ErrorMessage(message string) MenuBuilder {
 func (mb *menuBuilder) Build() Menu {
 	argSlice := make([]string, 0)
 	argSlice = appendIf(argSlice, "-e", mb.message)
-
+	
 	return menu{
 		cmd:  rofi,
 		args: argSlice,
 	}
-
+	
 }
 
 type menu struct {
@@ -104,15 +104,15 @@ type menu struct {
 
 func (m menu) Exec(input string) (string, error) {
 	rofi := exec.Command(m.cmd, m.args...)
-
+	
 	var stdout, stderr bytes.Buffer
-
+	
 	rofi.Stdout = &stdout
 	rofi.Stderr = &stderr
-
+	
 	err := rofi.Run()
 	exception.CheckThrow(err)
-
+	
 	return string(stdout.Bytes()), fmt.Errorf(string(stderr.Bytes()))
 }
 
@@ -170,7 +170,7 @@ func (dmb *dmenuBuilder) Build() DMenu {
 	argSlice = appendIf(argSlice, "-auto-select", dmb.autoSelect)
 	argSlice = appendIf(argSlice, "-matching", dmb.matching)
 	argSlice = appendIf(argSlice, "-theme-str", dmb.themeStr)
-
+	
 	fmt.Printf("action args: \n %v\n", argSlice)
 	return dmenu{
 		cmd:  rofi,
@@ -179,7 +179,7 @@ func (dmb *dmenuBuilder) Build() DMenu {
 }
 
 func appendIf(slice []string, argName string, argValue interface{}) []string {
-
+	
 	switch v := argValue.(type) {
 	case bool:
 		if v {
@@ -196,9 +196,9 @@ func appendIf(slice []string, argName string, argValue interface{}) []string {
 			slice = append(slice, fmt.Sprintf("%d", v))
 		}
 	}
-
+	
 	return slice
-
+	
 }
 
 type DMenu interface {
@@ -212,21 +212,21 @@ type dmenu struct {
 
 func (d dmenu) Exec(input string) (string, error) {
 	rofi := exec.Command(d.cmd, d.args...)
-
+	
 	stdin, err := rofi.StdinPipe()
 	exception.CheckThrow(err)
-
+	
 	go func() {
 		defer stdin.Close()
 		_, _ = io.WriteString(stdin, input)
 	}()
-
+	
 	var stdout, stderr bytes.Buffer
 	rofi.Stdout = &stdout
 	rofi.Stderr = &stderr
-
+	
 	err = rofi.Run()
 	exception.CheckThrow(err)
-
+	
 	return string(stdout.Bytes()), fmt.Errorf(string(stderr.Bytes()))
 }

@@ -7,7 +7,7 @@ import (
 
 func TestAppendIf(t *testing.T) {
 	original := []string{"a"}
-
+	
 	type args struct {
 		slice    []string
 		argName  string

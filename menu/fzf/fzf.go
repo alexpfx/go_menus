@@ -10,13 +10,12 @@ const (
 	prompt     = "--prompt"
 	autoSelect = "-1"
 	withNth    = "--with-nth"
-	delimiter = "-d"
+	delimiter  = "-d"
 )
 
 func NewBuilder() menu.Builder {
 	return &fzfMenuBuilder{}
 }
-
 
 type Builder interface {
 	menu.Builder
@@ -28,8 +27,8 @@ func (f Menu) Run(input string) (string, error) {
 }
 
 type Menu struct {
-	cmd            string
-	args           []string
+	cmd  string
+	args []string
 }
 
 type fzfMenuBuilder struct {
@@ -45,29 +44,28 @@ func (f *fzfMenuBuilder) WithNth(nth string, sep string) menu.Builder {
 	return f
 }
 
-
 func (f *fzfMenuBuilder) Prompt(s string) menu.Builder {
 	f.prompt = s
 	return f
 }
 
-func (f *fzfMenuBuilder) AutoSelect(b bool) menu.Builder{
+func (f *fzfMenuBuilder) AutoSelect(b bool) menu.Builder {
 	f.autoSelect = b
 	return f
 }
 
 func (f *fzfMenuBuilder) Build() menu.Menu {
 	argSlice := make([]string, 0)
-
+	
 	argSlice = util.AppendIf(argSlice, prompt, f.prompt)
 	argSlice = util.AppendIf(argSlice, autoSelect, f.autoSelect)
 	argSlice = util.AppendIf(argSlice, withNth, f.withNth)
 	if f.withNth != "" {
 		argSlice = util.AppendIf(argSlice, delimiter, f.nthDelimiter)
 	}
-
+	
 	return Menu{
-		cmd:            cmd,
-		args:           argSlice,
+		cmd:  cmd,
+		args: argSlice,
 	}
 }

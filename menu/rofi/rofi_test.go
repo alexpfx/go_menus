@@ -15,7 +15,7 @@ const (
 
 func Test_RofiDmenuBuilder(t *testing.T) {
 	b := NewDMenuBuilder().Format("s").MultiSelect(true).Prompt("selecione").Sep("|").Build()
-
+	
 	fmt.Println(b.Exec(""))
 }
 
@@ -27,7 +27,7 @@ func Test_Input(t *testing.T) {
 func Test_generated(t *testing.T) {
 	silabas := strings.Split(StrSilabas, " ")
 	ls := len(silabas)
-
+	
 	input := strings.Builder{}
 	for i := 0; i < 20; i++ {
 		for i := 0; i < 3; i++ {
@@ -37,54 +37,54 @@ func Test_generated(t *testing.T) {
 		}
 		input.WriteString("\n")
 	}
-
+	
 	dmenu := NewDMenuBuilder().Format("s").
 		MultiSelect(false).
 		AutoSelect(true).
 		Matching("regex").
 		Prompt("action").
 		Build()
-
+	
 	out, err := dmenu.Exec(input.String())
 	if err != nil {
 		log.Println(err.Error())
 	}
 	fmt.Println(out)
-
+	
 }
 
 func Test_RofiDmenuExec(t *testing.T) {
 	input := "[ls]\nls -[la]\nls -l [ll]\n[ca]t\nflameshot [fm]"
 	print("echo " + input)
-
+	
 	dmenu := NewDMenuBuilder().Format("s").
 		MultiSelect(false).
 		AutoSelect(true).
 		Matching("regex").
 		Prompt("action").
 		Build()
-
+	
 	out, err := dmenu.Exec(input)
 	if err != nil {
 		log.Println(err.Error())
 	}
-
+	
 	fmt.Println(out)
-
+	
 }
 
 func Test_appendIf(t *testing.T) {
 	slice := make([]string, 0)
 	slice = append(slice, "base")
-
+	
 	slice = appendIf(slice, "-v", true)
 	slice = appendIf(slice, "-n", 22)
 	slice = appendIf(slice, "-s", "teste")
-
+	
 	slice = appendIf(slice, "-v", false)
 	slice = appendIf(slice, "-n", 0)
 	slice = appendIf(slice, "-s", "")
-
+	
 	assert.EqualValues(t, []string{
 		"base", "-v", "-n", "22", "-s", "teste",
 	}, slice)

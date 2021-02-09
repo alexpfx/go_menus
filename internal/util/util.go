@@ -9,7 +9,8 @@ import (
 	"reflect"
 )
 
-func runCmdWithReader(finput func(closer io.WriteCloser), cmd string, args []string) (string, error) {
+func runCmdWithReader(finput func(closer io.WriteCloser), cmd string, args []string) (string,
+	error) {
 	menu := exec.Command(cmd, args...)
 	fmt.Println("comando: ", menu.String())
 	menu.Stderr = os.Stderr
@@ -27,7 +28,7 @@ func RunCmdWithInput(input string, cmd string, args []string) (string, error) {
 		fmt.Fprintln(in, input)
 	}
 	return runCmdWithReader(finput, cmd, args)
-
+	
 }
 
 func AppendIf(res []string, argName string, pValue interface{}) []string {
@@ -35,7 +36,7 @@ func AppendIf(res []string, argName string, pValue interface{}) []string {
 		return res
 	}
 	vs := reflect.ValueOf(pValue)
-
+	
 	switch vs.Kind() {
 	case reflect.String:
 		if vs.String() != "" {
@@ -43,7 +44,7 @@ func AppendIf(res []string, argName string, pValue interface{}) []string {
 			res = append(res, fmt.Sprintf("%s", vs.String()))
 			return res
 		}
-
+	
 	case reflect.Bool:
 		if vs.Bool() {
 			res = appendArgName(res, argName)
@@ -52,7 +53,7 @@ func AppendIf(res []string, argName string, pValue interface{}) []string {
 	case reflect.Slice:
 		for i := 0; i < vs.Len(); i++ {
 			vIndex := vs.Index(i)
-
+			
 			if i == 0 {
 				res = AppendIf(res, argName, vIndex.Interface())
 			} else {
@@ -62,7 +63,7 @@ func AppendIf(res []string, argName string, pValue interface{}) []string {
 	case reflect.Int:
 		log.Fatal(fmt.Errorf("cannot be int, use string instead"))
 	}
-
+	
 	return res
 }
 
