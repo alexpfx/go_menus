@@ -9,65 +9,38 @@ const (
 	cmd        = "fzf"
 	prompt     = "--prompt"
 	autoSelect = "-1"
-	withNth    = "--with-nth"
+	withNth = "--with-nth"
 	delimiter = "-d"
 )
 
-func NewBuilder() menu.Builder {
-	return &fzfMenuBuilder{}
+type MenuBuilder struct {
+	Prompt     string
+	AutoSelect bool
+	//WithNth limita a saída. formato: "1,2,.."
+	WithNth string
+	//Delimiter define o separador para Nth e WithNth
+	Delimiter string
 }
 
-
-type Builder interface {
-	menu.Builder
-	WithNth(nth, sep string) menu.Builder
-}
-
-func (f Menu) Run(input string) (string, error) {
+func (f fzfmenu) Run(input string) (string, error) {
 	return util.RunCmdWithInput(input, f.cmd, f.args)
 }
 
-type Menu struct {
-	cmd            string
-	args           []string
+type fzfmenu struct {
+	cmd  string
+	args []string
 }
 
-type fzfMenuBuilder struct {
-	prompt       string
-	autoSelect   bool
-	withNth      string
-	nthDelimiter string
-}
-
-func (f *fzfMenuBuilder) WithNth(nth string, sep string) menu.Builder {
-	f.withNth = nth
-	f.nthDelimiter = sep
-	return f
-}
-
-
-func (f *fzfMenuBuilder) Prompt(s string) menu.Builder {
-	f.prompt = s
-	return f
-}
-
-func (f *fzfMenuBuilder) AutoSelect(b bool) menu.Builder{
-	f.autoSelect = b
-	return f
-}
-
-func (f *fzfMenuBuilder) Build() menu.Menu {
+func (f *MenuBuilder) Build() menu.Menu {
 	argSlice := make([]string, 0)
 
-	argSlice = util.AppendIf(argSlice, prompt, f.prompt)
-	argSlice = util.AppendIf(argSlice, autoSelect, f.autoSelect)
-	argSlice = util.AppendIf(argSlice, withNth, f.withNth)
-	if f.withNth != "" {
-		argSlice = util.AppendIf(argSlice, delimiter, f.nthDelimiter)
-	}
+	argSlice = util.AppendIf(argSlice, prompt, f.Prompt)
+	argSlice = util.AppendIf(argSlice, autoSelect, f.AutoSelect)
+	argSlice = util.AppendIf(argSlice, withNth, f.WithNth)
+	argSlice = util.AppendIf(argSlice, delimiter, f.Delimiter)
 
-	return Menu{
-		cmd:            cmd,
-		args:           argSlice,
+	return fzfmenu{
+		cmd:  cmd,
+		args: argSlice,
 	}
 }

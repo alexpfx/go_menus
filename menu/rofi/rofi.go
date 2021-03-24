@@ -3,8 +3,8 @@ package rofi
 import (
 	"bytes"
 	"fmt"
-	"github.com/alexpfx/go_common/exception"
 	"io"
+	"log"
 	"os/exec"
 )
 
@@ -111,9 +111,15 @@ func (m menu) Exec(input string) (string, error) {
 	rofi.Stderr = &stderr
 
 	err := rofi.Run()
-	exception.CheckThrow(err)
+	check(err)
 
 	return string(stdout.Bytes()), fmt.Errorf(string(stderr.Bytes()))
+}
+
+func check(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 type dmenuBuilder struct {
@@ -214,7 +220,7 @@ func (d dmenu) Exec(input string) (string, error) {
 	rofi := exec.Command(d.cmd, d.args...)
 
 	stdin, err := rofi.StdinPipe()
-	exception.CheckThrow(err)
+	check(err)
 
 	go func() {
 		defer stdin.Close()
@@ -226,7 +232,7 @@ func (d dmenu) Exec(input string) (string, error) {
 	rofi.Stderr = &stderr
 
 	err = rofi.Run()
-	exception.CheckThrow(err)
+	check(err)
 
 	return string(stdout.Bytes()), fmt.Errorf(string(stderr.Bytes()))
 }
