@@ -1,13 +1,12 @@
-package fzf
+package menu
 
 import (
 	"github.com/alexpfx/go_menus/internal/util"
-	"github.com/alexpfx/go_menus/menu"
 )
 
 const (
 	cmd        = "fzf"
-	prompt     = "--prompt"
+	prompt     = "--Prompt"
 	autoSelect = "-1"
 	withNth = "--with-nth"
 	delimiter = "-d"
@@ -31,7 +30,7 @@ type fzfmenu struct {
 	args []string
 }
 
-func (f *MenuBuilder) Build() menu.Menu {
+func (f *MenuBuilder) Build() Menu {
 	argSlice := make([]string, 0)
 
 	argSlice = util.AppendIf(argSlice, prompt, f.Prompt)
