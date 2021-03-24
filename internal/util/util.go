@@ -25,7 +25,7 @@ func runCmdWithReader(finput func(closer io.WriteCloser), cmd string, args []str
 	return string(result), nil
 }
 
-func RunCmdWithNoImput(cmd string, args []string) (string, error) {
+func RunCmdWithNoInput(cmd string, args []string) (string, error) {
 	return runCmdWithReader(func(in io.WriteCloser) {
 	}, cmd, args)
 	
@@ -74,6 +74,8 @@ func AppendIf(res []string, argName string, pValue interface{}) []string {
 	
 	return res
 }
+
+
 
 func appendArgName(slice []string, argName string) []string {
 	if argName == "" {
