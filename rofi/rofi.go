@@ -15,6 +15,14 @@ const (
 )
 
 
+func NewRofiInputBuilder(prompt string) RofiBuilder {
+	return RofiBuilder{
+		dMenu:    true,
+		themeStr: "listview { enabled: false;}",
+		format:   "f",
+		prompt:   prompt,
+	}
+}
 
 
 type rofiMenu struct {
@@ -23,13 +31,14 @@ type rofiMenu struct {
 }
 
 func (r rofiMenu) Run(input string) (string, error) {
-	return util.RunCmdWithInput(input, r.cmd, r.args)
+	//return util.RunCmdWithInput(input, r.cmd, r.args)
+	return util.RunCmdWithNoInput(r.cmd, r.args)
 }
 
 type RofiBuilder struct {
-	Prompt     string
+	prompt     string
 	AutoSelect bool
-	ThemeStr   string
+	themeStr   string
 	//	//'s' selected string
 	//	//'i' index (0 - (N-1))
 	//	//'d' index (1 - N)
@@ -37,9 +46,9 @@ type RofiBuilder struct {
 	//	//'p' Selected string stripped from Pango markup (Needs to be a valid string)
 	//	//'f' filter string (user action)
 	//	//'F' quoted filter string (user action)
-	Format string
+	format string
 	Mode   string
-	DMenu  bool
+	dMenu  bool
 }
 
 
@@ -47,13 +56,13 @@ func (r RofiBuilder) Build() Menu {
 	argSlice := make([]string, 0)
 	
 	argSlice = util.AppendIf(argSlice, rofiMode, r.Mode)
-	argSlice = util.AppendIf(argSlice, rofiDmenu, r.DMenu)
+	argSlice = util.AppendIf(argSlice, rofiDmenu, r.dMenu)
 	
-	argSlice = util.AppendIf(argSlice, rofiPrompt, r.Prompt)
+	argSlice = util.AppendIf(argSlice, rofiPrompt, r.prompt)
 	argSlice = util.AppendIf(argSlice, rofiAutoSelect, r.AutoSelect)
 	
-	argSlice = util.AppendIf(argSlice, rofiThemeStr, r.ThemeStr)
-	argSlice = util.AppendIf(argSlice, rofiFormat, r.Format)
+	argSlice = util.AppendIf(argSlice, rofiThemeStr, r.themeStr)
+	argSlice = util.AppendIf(argSlice, rofiFormat, r.format)
 	
 	return rofiMenu{
 		cmd:  rofiCmd,

@@ -1,7 +1,8 @@
-package menu
+package fzf
 
 import (
 	"github.com/alexpfx/go_menus/internal/util"
+	"github.com/alexpfx/go_menus/menu"
 )
 
 const (
@@ -30,7 +31,7 @@ type fzfmenu struct {
 	args []string
 }
 
-func (f *MenuBuilder) Build() Menu {
+func (f *MenuBuilder) Build() menu.Menu {
 	argSlice := make([]string, 0)
 
 	argSlice = util.AppendIf(argSlice, prompt, f.Prompt)
