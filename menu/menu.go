@@ -1,5 +1,7 @@
 package menu
 
 type Menu interface {
-	Run(input string) (string, error)
+	Run(input interface{}) (string, error)
 }
+
+
