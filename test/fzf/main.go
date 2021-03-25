@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/alexpfx/go_menus/menu"
+	"github.com/alexpfx/go_menus/fzf"
 )
 
 func main() {
@@ -12,14 +12,7 @@ func main() {
 func testFzfBuilder() {
 	const input1 = "1 janeiro sexta true\n2 fevereiro quarta true\n2 março terça false"
 
-	b := menu.MenuBuilder{
-		Prompt:     "Selecione",
-		AutoSelect: false,
-		WithNth:    "1,2,3",
-		Delimiter:  "",
-	}
-
-	m := b.Build()
+	m := fzf.New("Selecione", false, "", "")
 
 	run, err := m.Run(input1)
 	if err != nil {
@@ -32,14 +25,7 @@ func testFzfBuilder() {
 func testFzfBuilder2() {
 	const input2 = "1;gremio fbpa\n2;palmeiras fc\n3;figueira fc"
 
-	b := menu.MenuBuilder{
-		Prompt:     "Time\n",
-		AutoSelect: true,
-		WithNth:    "2",
-		Delimiter:  ";",
-	}
-
-	m := b.Build()
+	m := fzf.NewIndexed("Selecione")
 
 	run, err := m.Run(input2)
 	if err != nil {

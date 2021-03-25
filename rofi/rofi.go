@@ -1,7 +1,9 @@
-package menu
+package rofi
 
 import (
+	"fmt"
 	"github.com/alexpfx/go_menus/internal/util"
+	"github.com/alexpfx/go_menus/menu"
 )
 
 const (
@@ -14,30 +16,52 @@ const (
 	rofiDmenu      = "-dmenu"
 )
 
-
-func NewRofiInputBuilder(prompt string) RofiBuilder {
-	return RofiBuilder{
+func NewInput(prompt string) menu.Menu {
+	b := builder{
 		dMenu:    true,
 		themeStr: "listview { enabled: false;}",
 		format:   "f",
 		prompt:   prompt,
 	}
+	args := b.buildArgs()
+	return rofiMenu{
+		args: args,
+	}
 }
 
+func NewDMenu(prompt string) menu.Menu {
+	args := builder{
+		prompt:     prompt,
+		autoSelect: false,
+		format:     "i;s",
+		mode:       "",
+		dMenu:      true,
+	}.buildArgs()
+	return rofiDMenu{
+		args: args,
+	}
+}
 
 type rofiMenu struct {
-	cmd  string
+	args []string
+}
+type rofiDMenu struct {
 	args []string
 }
 
-func (r rofiMenu) Run(input string) (string, error) {
+func (r rofiMenu) Run(interface{}) (string, error) {
 	//return util.RunCmdWithInput(input, r.cmd, r.args)
-	return util.RunCmdWithNoInput(r.cmd, r.args)
+	return util.RunCmdWithNoInput(rofiCmd, r.args)
 }
 
-type RofiBuilder struct {
+func (r rofiDMenu) Run(input interface{}) (string, error) {
+	fmt.Println("input ", input)
+	return util.RunCmdWithInput(input.(string), rofiCmd, r.args)
+}
+
+type builder struct {
 	prompt     string
-	AutoSelect bool
+	autoSelect bool
 	themeStr   string
 	//	//'s' selected string
 	//	//'i' index (0 - (N-1))
@@ -47,26 +71,22 @@ type RofiBuilder struct {
 	//	//'f' filter string (user action)
 	//	//'F' quoted filter string (user action)
 	format string
-	Mode   string
+	mode   string
 	dMenu  bool
 }
 
-
-func (r RofiBuilder) Build() Menu {
+func (r builder) buildArgs() []string {
 	argSlice := make([]string, 0)
-	
-	argSlice = util.AppendIf(argSlice, rofiMode, r.Mode)
+
+	argSlice = util.AppendIf(argSlice, rofiMode, r.mode)
 	argSlice = util.AppendIf(argSlice, rofiDmenu, r.dMenu)
-	
+
 	argSlice = util.AppendIf(argSlice, rofiPrompt, r.prompt)
-	argSlice = util.AppendIf(argSlice, rofiAutoSelect, r.AutoSelect)
-	
+	argSlice = util.AppendIf(argSlice, rofiAutoSelect, r.autoSelect)
+
 	argSlice = util.AppendIf(argSlice, rofiThemeStr, r.themeStr)
 	argSlice = util.AppendIf(argSlice, rofiFormat, r.format)
-	
-	return rofiMenu{
-		cmd:  rofiCmd,
-		args: argSlice,
-	}
-	
+
+	return argSlice
+
 }
